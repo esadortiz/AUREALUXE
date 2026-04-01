@@ -471,12 +471,12 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
     doc.text(formatDate(pedido.created_at || pedido.fecha), right - 80, 55, { align: 'right' });
 
     y = 100;
-    doc.setTextColor(...colorText);
+    setTextColorRGB(doc, colorText);
 
     // Sección: Información del pedido
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
-    doc.setTextColor(...colorPrimary);
+    setTextColorRGB(doc, colorPrimary);
     doc.text('INFORMACIÓN DEL PEDIDO', left, y);
     y += 16;
 
@@ -502,7 +502,8 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
     doc.text('Estado:', left + 10, y);
     doc.setFont('helvetica', 'bold');
     const estadoText = estadoLabel(pedido.estado);
-    doc.setTextColor(estadoText === 'Cancelado' ? [220, 20, 60] : colorPrimary);
+    const estadoColor = estadoText === 'Cancelado' ? [220, 20, 60] : colorPrimary;
+    setTextColorRGB(doc, estadoColor);
     doc.text(estadoText, left + 100, y);
 
     y += 22;
@@ -582,7 +583,7 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
         }
 
         const nombre = String(item?.nombre || 'Producto');
-        const categoria = String(item?.categoria || 'General');
+        const categoria = String(item?.categoria || 'General').trim() || 'General';
         const cantidad = parsePositiveInt(item?.cantidad, 1);
         const precio = parsePrice(item?.precio, 0);
         const subtotal = parseMoney(item?.subtotal);
@@ -658,7 +659,7 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
 
     // Footer
     y = pageHeight - 35;
-    doc.setDrawColor(...colorSecond);
+    setDrawColorRGB(doc, colorSecond);
     doc.line(left, y, right, y);
 
     doc.setFont('helvetica', 'normal');
