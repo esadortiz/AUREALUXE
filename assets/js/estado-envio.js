@@ -333,11 +333,30 @@ async function loadEstadoEnvios() {
 }
 
 function getPdfApi() {
-  const jsPdfRoot = window.jspdf;
-  if (!jsPdfRoot || typeof jsPdfRoot.jsPDF !== 'function') {
-    return null;
+  console.log('[PDF] Intentando obtener API de jsPDF...');
+  
+  // Intento 1: Acceso directo a window.jspdf (UMD)
+  if (window.jspdf && typeof window.jspdf.jsPDF === 'function') {
+    console.log('[PDF] ✓ Encontrado: window.jspdf.jsPDF');
+    return window.jspdf.jsPDF;
   }
-  return jsPdfRoot.jsPDF;
+  
+  // Intento 2: Acceso directo a window (global)
+  if (window.jsPDF && typeof window.jsPDF === 'function') {
+    console.log('[PDF] ✓ Encontrado: window.jsPDF');
+    return window.jsPDF;
+  }
+  
+  // Intento 3: Buscar en window.pdf (posible namespace)
+  if (window.pdf && window.pdf.jsPDF && typeof window.pdf.jsPDF === 'function') {
+    console.log('[PDF] ✓ Encontrado: window.pdf.jsPDF');
+    return window.pdf.jsPDF;
+  }
+  
+  console.error('[PDF] ✗ No se encontró jsPDF en ninguna ubicación');
+  console.log('[PDF] window.jspdf:', window.jspdf);
+  console.log('[PDF] window.jsPDF:', window.jsPDF);
+  return null;
 }
 
 function writePdfLine(doc, text, x, yRef, maxWidth, lineHeight, pageBottom, topY) {
@@ -353,22 +372,58 @@ function writePdfLine(doc, text, x, yRef, maxWidth, lineHeight, pageBottom, topY
   });
 }
 
+// Funciones helper para colores
+function setFillColorRGB(doc, rgb) {
+  if (Array.isArray(rgb) && rgb.length === 3) {
+    doc.setFillColor(rgb[0], rgb[1], rgb[2]);
+  } else {
+    doc.setFillColor(255, 255, 255);
+  }
+}
+
+function setTextColorRGB(doc, rgb) {
+  if (Array.isArray(rgb) && rgb.length === 3) {
+    doc.setTextColor(rgb[0], rgb[1], rgb[2]);
+  } else {
+    doc.setTextColor(0, 0, 0);
+  }
+}
+
+function setDrawColorRGB(doc, rgb) {
+  if (Array.isArray(rgb) && rgb.length === 3) {
+    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+  } else {
+    doc.setDrawColor(0, 0, 0);
+  }
+}
+
 function downloadPedidoComprobante(pedidoId, btnEl) {
+  console.log('[PDF] Iniciando descarga de comprobante para pedido:', pedidoId);
+  
   if (!pedidoId) {
+    console.error('[PDF] No hay pedidoId');
+    errorEl.textContent = 'No se especificó el pedido para descargar.';
     return;
   }
 
   const pedido = pedidosByIdCache[pedidoId];
   if (!pedido) {
+    console.error('[PDF] Pedido no encontrado en cache:', pedidoId);
+    console.log('[PDF] Cache disponible:', Object.keys(pedidosByIdCache));
     errorEl.textContent = 'No se encontro la informacion del pedido para generar el comprobante.';
     return;
   }
 
+  console.log('[PDF] Pedido encontrado:', pedido.id);
+
   const jsPDF = getPdfApi();
   if (!jsPDF) {
+    console.error('[PDF] No se pudo obtener la API de jsPDF');
     errorEl.textContent = 'No se pudo cargar la libreria de PDF. Recarga la pagina e intenta de nuevo.';
     return;
   }
+
+  console.log('[PDF] API jsPDF disponible, procediendo a generar...');
 
   const originalText = btnEl.textContent;
   btnEl.disabled = true;
@@ -376,7 +431,11 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
 
   try {
     const items = itemsByPedidoCache[pedidoId] || [];
+    console.log('[PDF] Items encontrados:', items.length);
+    
     const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+    console.log('[PDF] Documento jsPDF creado');
+    
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const left = 50;
@@ -388,7 +447,7 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
     let y = 50;
 
     // Header decorativo
-    doc.setFillColor(...colorPrimary);
+    setFillColorRGB(doc, colorPrimary);
     doc.rect(0, 0, pageWidth, 80, 'F');
 
     // Logo/Nombre
@@ -421,12 +480,12 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
     doc.text('INFORMACIÓN DEL PEDIDO', left, y);
     y += 16;
 
-    doc.setFillColor(...colorLight);
+    setFillColorRGB(doc, colorLight);
     doc.rect(left, y - 10, right - left, 55, 'F');
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.setTextColor(...colorText);
+    setTextColorRGB(doc, colorText);
 
     doc.text('Número de pedido:', left + 10, y);
     doc.setFont('helvetica', 'bold');
@@ -447,21 +506,21 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
     doc.text(estadoText, left + 100, y);
 
     y += 22;
-    doc.setTextColor(...colorText);
+    setTextColorRGB(doc, colorText);
 
     // Sección: Datos del cliente
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
-    doc.setTextColor(...colorPrimary);
+    setTextColorRGB(doc, colorPrimary);
     doc.text('DATOS DEL CLIENTE', left, y);
     y += 16;
 
-    doc.setFillColor(...colorLight);
+    setFillColorRGB(doc, colorLight);
     doc.rect(left, y - 10, right - left, 60, 'F');
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.setTextColor(...colorText);
+    setTextColorRGB(doc, colorText);
 
     doc.text('Nombre:', left + 10, y);
     doc.setFont('helvetica', 'bold');
@@ -491,12 +550,12 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
     // Sección: Productos
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
-    doc.setTextColor(...colorPrimary);
+    setTextColorRGB(doc, colorPrimary);
     doc.text('DETALLE DE PRODUCTOS', left, y);
     y += 16;
 
     // Header tabla
-    doc.setFillColor(...colorPrimary);
+    setFillColorRGB(doc, colorPrimary);
     doc.rect(left, y - 10, right - left, 16, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
@@ -508,7 +567,7 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
     doc.text('Subtotal', right - 10, y + 2, { align: 'right' });
 
     y += 18;
-    doc.setTextColor(...colorText);
+    setTextColorRGB(doc, colorText);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
 
@@ -534,7 +593,7 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
           doc.rect(left, y - 8, right - left, 14, 'F');
         }
 
-        doc.setTextColor(...colorText);
+        setTextColorRGB(doc, colorText);
         const nameLines = doc.splitTextToSize(nombre + ' - ' + categoria, right - left - 220);
         doc.text(nameLines, left + 10, y);
 
@@ -549,7 +608,7 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
     y += 10;
 
     // Línea separadora
-    doc.setDrawColor(...colorSecond);
+    setDrawColorRGB(doc, colorSecond);
     doc.setLineWidth(1);
     doc.line(left, y, right, y);
 
@@ -563,7 +622,7 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.setTextColor(...colorText);
+    setTextColorRGB(doc, colorText);
 
     doc.text('Subtotal:', right - 150, y);
     doc.setFont('helvetica', 'bold');
@@ -584,15 +643,15 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
     y += 16;
 
     // Total destacado
-    doc.setFillColor(...colorLight);
+    setFillColorRGB(doc, colorLight);
     doc.rect(right - 160, y - 8, 150, 18, 'F');
-    doc.setDrawColor(...colorPrimary);
+    setDrawColorRGB(doc, colorPrimary);
     doc.setLineWidth(2);
     doc.rect(right - 160, y - 8, 150, 18);
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
-    doc.setTextColor(...colorPrimary);
+    setTextColorRGB(doc, colorPrimary);
     doc.text('TOTAL', right - 155, y + 2);
     doc.setFontSize(14);
     doc.text(formatCop(totalPedido), right - 10, y + 3, { align: 'right' });
@@ -609,16 +668,24 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
     doc.text('Generado y archivado digitalmente - ' + formatDate(new Date().toISOString()), pageWidth / 2, y + 18, { align: 'center' });
 
     const safeId = String(pedido.id || 'pedido').replace(/[^a-zA-Z0-9-]/g, '').slice(0, 30) || 'pedido';
-    doc.save('comprobante-' + safeId + '.pdf');
+    const fileName = 'comprobante-' + safeId + '.pdf';
+    
+    console.log('[PDF] Intentando descargar con nombre:', fileName);
+    doc.save(fileName);
+    console.log('[PDF] ✓ PDF descargado exitosamente');
+    
     errorEl.textContent = '';
     showEstadoToast('✓ Comprobante PDF generado correctamente.');
   } catch (_error) {
-    errorEl.textContent = 'No se pudo generar el comprobante PDF. Intenta nuevamente.';
+    console.error('[PDF] ✗ Error al generar PDF:', _error);
+    console.error('[PDF] Stack:', _error instanceof Error ? _error.stack : 'No disponible');
+    errorEl.textContent = 'No se pudo generar el comprobante PDF. Error: ' + ((_error instanceof Error ? _error.message : String(_error)) || 'desconocido');
   } finally {
     btnEl.disabled = false;
     btnEl.textContent = originalText;
   }
 }
+
 
 function normalizeName(value) {
   return String(value || '').trim().toLowerCase();
@@ -864,22 +931,32 @@ function setupCancelModalEvents() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('════════════════════════════════════════════');
+  console.log('[ESTADO-ENVIO] *** INICIALIZANDO PÁGINA ***');
+  console.log('════════════════════════════════════════════');
+  
   setupCancelModalEvents();
   loadEstadoEnvios();
 
   btnRefresh.addEventListener('click', () => {
+    console.log('[ESTADO-ENVIO] Botón refrescar presionado');
     loadEstadoEnvios();
   });
+
+  console.log('[ESTADO-ENVIO] ✓ Event listeners agregados');
+  console.log('════════════════════════════════════════════');
 
   listEl.addEventListener('click', (event) => {
     const target = event.target;
     if (!(target instanceof Element)) {
+      console.log('[EVENTOS] Target no es Element');
       return;
     }
 
     const invoiceBtn = target.closest('.estado-btn-invoice');
     if (invoiceBtn) {
       const invoicePedidoId = invoiceBtn.getAttribute('data-pedido-id') || '';
+      console.log('[EVENTOS] Presionado botón de descarga para pedido:', invoicePedidoId);
       downloadPedidoComprobante(invoicePedidoId, invoiceBtn);
       return;
     }
@@ -887,6 +964,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const reorderBtn = target.closest('.estado-btn-reorder');
     if (reorderBtn) {
       const reorderPedidoId = reorderBtn.getAttribute('data-pedido-id') || '';
+      console.log('[EVENTOS] Presionado botón de reorden para pedido:', reorderPedidoId);
       reordenarPedido(reorderPedidoId, reorderBtn);
       return;
     }
@@ -896,7 +974,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const pedidoId = btn.getAttribute('data-pedido-id') || '';
-    cancelarPedido(pedidoId, btn);
+    const cancelId = btn.getAttribute('data-pedido-id') || '';
+    console.log('[EVENTOS] Presionado botón de cancelar para pedido:', cancelId);
+    cancelarPedido(cancelId, btn);
   });
 });
