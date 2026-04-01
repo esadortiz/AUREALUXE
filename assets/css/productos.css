@@ -516,9 +516,10 @@ body.reviews-modal-open {
     border-radius: 8px;
     background: #fff;
     box-shadow: 0 12px 26px rgba(44, 37, 32, 0.12);
-    overflow: hidden;
+    overflow-y: auto;
+    max-height: 360px;
     display: none;
-    z-index: 80;
+    z-index: 9999;
 }
 
 .search-suggestions.open {

@@ -136,6 +136,10 @@ function renderCart() {
   const btnContinue = document.getElementById('btnContinueShopping');
 
   if (cartData.length === 0) {
+    carritoEmpty.style.display = 'flex';
+    carritoItems.style.display = 'none';
+    btnContinue.style.display = 'none';
+    carritoItems.innerHTML = '';
     return;
   }
 
@@ -168,27 +172,35 @@ function renderCart() {
     carritoItems.insertAdjacentHTML('beforeend', itemHTML);
   });
 
-  // Agregar event listeners a los botones
-  document.querySelectorAll('.btn-minus').forEach(btn => {
-    btn.addEventListener('click', function () {
-      const index = parseInt(this.dataset.index);
-      updateQuantity(index, -1);
-    });
-  });
+  setupCartEventListeners();
+}
 
-  document.querySelectorAll('.btn-plus').forEach(btn => {
-    btn.addEventListener('click', function () {
-      const index = parseInt(this.dataset.index);
-      updateQuantity(index, 1);
-    });
-  });
+function setupCartEventListeners() {
+  const carritoItems = document.getElementById('carritoItems');
+  
+  // Remover listeners viejos si existen
+  carritoItems.removeEventListener('click', handleCartClick);
+  
+  // Agregar un único listener con event delegation
+  carritoItems.addEventListener('click', handleCartClick);
+}
 
-  document.querySelectorAll('.btn-eliminar').forEach(btn => {
-    btn.addEventListener('click', function () {
-      const index = parseInt(this.dataset.index);
-      removeItem(index);
-    });
-  });
+function handleCartClick(event) {
+  const btn = event.target;
+  const index = parseInt(btn.dataset.index);
+  
+  if (isNaN(index)) return;
+  
+  if (btn.classList.contains('btn-minus')) {
+    event.preventDefault();
+    updateQuantity(index, -1);
+  } else if (btn.classList.contains('btn-plus')) {
+    event.preventDefault();
+    updateQuantity(index, 1);
+  } else if (btn.classList.contains('btn-eliminar')) {
+    event.preventDefault();
+    removeItem(index);
+  }
 }
 
 function updateQuantity(index, delta) {
