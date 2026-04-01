@@ -379,145 +379,239 @@ function downloadPedidoComprobante(pedidoId, btnEl) {
     const doc = new jsPDF({ unit: 'pt', format: 'a4' });
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const left = 42;
-    const right = pageWidth - 42;
-    const topStart = 58;
-    const pageBottom = pageHeight - 54;
-    const y = { value: topStart };
+    const left = 50;
+    const right = pageWidth - 50;
+    const colorPrimary = [138, 100, 73];
+    const colorSecond = [210, 198, 186];
+    const colorText = [60, 60, 60];
+    const colorLight = [248, 244, 239];
+    let y = 50;
 
+    // Header decorativo
+    doc.setFillColor(...colorPrimary);
+    doc.rect(0, 0, pageWidth, 80, 'F');
+
+    // Logo/Nombre
+    doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(18);
-    doc.text('AUREALUXE - Comprobante de compra', left, y.value);
+    doc.setFontSize(28);
+    doc.text('AUREALUXE', left, 35);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.text('Generado: ' + formatDate(new Date().toISOString()), left, y.value + 18);
-    y.value += 36;
+    doc.text('Comprobante de Compra', left, 55);
 
-    doc.setDrawColor(210, 198, 186);
-    doc.line(left, y.value, right, y.value);
-    y.value += 18;
+    // Número de pedido en header
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(255, 255, 255);
+    doc.text('#' + pedidoShortId(pedido.id), right - 80, 35, { align: 'right' });
 
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.text(formatDate(pedido.created_at || pedido.fecha), right - 80, 55, { align: 'right' });
+
+    y = 100;
+    doc.setTextColor(...colorText);
+
+    // Sección: Información del pedido
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
-    doc.text('Datos del pedido', left, y.value);
-    y.value += 16;
+    doc.setTextColor(...colorPrimary);
+    doc.text('INFORMACIÓN DEL PEDIDO', left, y);
+    y += 16;
+
+    doc.setFillColor(...colorLight);
+    doc.rect(left, y - 10, right - left, 55, 'F');
 
     doc.setFont('helvetica', 'normal');
-    writePdfLine(doc, 'Numero: ' + pedidoShortId(pedido.id), left, y, right - left, 14, pageBottom, topStart);
-    writePdfLine(doc, 'Fecha: ' + formatDate(pedido.created_at || pedido.fecha), left, y, right - left, 14, pageBottom, topStart);
-    writePdfLine(doc, 'Estado: ' + estadoLabel(pedido.estado), left, y, right - left, 14, pageBottom, topStart);
-    y.value += 8;
-
-    doc.setFont('helvetica', 'bold');
-    doc.text('Datos del cliente', left, y.value);
-    y.value += 16;
-
-    doc.setFont('helvetica', 'normal');
-    writePdfLine(doc, 'Nombre: ' + (pedido.cliente_nombre || 'No disponible'), left, y, right - left, 14, pageBottom, topStart);
-    writePdfLine(doc, 'Email: ' + (pedido.cliente_email || 'No disponible'), left, y, right - left, 14, pageBottom, topStart);
-    writePdfLine(doc, 'Telefono: ' + (pedido.cliente_telefono || 'No disponible'), left, y, right - left, 14, pageBottom, topStart);
-    writePdfLine(doc, 'Direccion: ' + buildDireccionText(pedido), left, y, right - left, 14, pageBottom, topStart);
-    y.value += 8;
-
-    doc.setFont('helvetica', 'bold');
-    doc.text('Detalle de productos', left, y.value);
-    y.value += 14;
-
-    doc.setFillColor(248, 244, 239);
-    doc.rect(left, y.value - 11, right - left, 20, 'F');
-
-    const itemNameX = left + 4;
-    const qtyX = right - 150;
-    const subtotalX = right - 4;
-
     doc.setFontSize(10);
-    doc.text('Producto', itemNameX, y.value + 2);
-    doc.text('Cant.', qtyX, y.value + 2, { align: 'right' });
-    doc.text('Subtotal', subtotalX, y.value + 2, { align: 'right' });
-    y.value += 20;
+    doc.setTextColor(...colorText);
+
+    doc.text('Número de pedido:', left + 10, y);
+    doc.setFont('helvetica', 'bold');
+    doc.text(pedidoShortId(pedido.id), left + 100, y);
+
+    y += 14;
+    doc.setFont('helvetica', 'normal');
+    doc.text('Fecha de compra:', left + 10, y);
+    doc.setFont('helvetica', 'bold');
+    doc.text(formatDate(pedido.created_at || pedido.fecha), left + 100, y);
+
+    y += 14;
+    doc.setFont('helvetica', 'normal');
+    doc.text('Estado:', left + 10, y);
+    doc.setFont('helvetica', 'bold');
+    const estadoText = estadoLabel(pedido.estado);
+    doc.setTextColor(estadoText === 'Cancelado' ? [220, 20, 60] : colorPrimary);
+    doc.text(estadoText, left + 100, y);
+
+    y += 22;
+    doc.setTextColor(...colorText);
+
+    // Sección: Datos del cliente
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(...colorPrimary);
+    doc.text('DATOS DEL CLIENTE', left, y);
+    y += 16;
+
+    doc.setFillColor(...colorLight);
+    doc.rect(left, y - 10, right - left, 60, 'F');
 
     doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(...colorText);
+
+    doc.text('Nombre:', left + 10, y);
+    doc.setFont('helvetica', 'bold');
+    doc.text(pedido.cliente_nombre || 'No disponible', left + 100, y);
+
+    y += 14;
+    doc.setFont('helvetica', 'normal');
+    doc.text('Email:', left + 10, y);
+    doc.setFont('helvetica', 'bold');
+    doc.text(pedido.cliente_email || 'No disponible', left + 100, y);
+
+    y += 14;
+    doc.setFont('helvetica', 'normal');
+    doc.text('Teléfono:', left + 10, y);
+    doc.setFont('helvetica', 'bold');
+    doc.text(pedido.cliente_telefono || 'No disponible', left + 100, y);
+
+    y += 14;
+    doc.setFont('helvetica', 'normal');
+    doc.text('Dirección:', left + 10, y);
+    doc.setFont('helvetica', 'bold');
+    const directionLines = doc.splitTextToSize(buildDireccionText(pedido), right - left - 110);
+    doc.text(directionLines, left + 100, y);
+
+    y += 22;
+
+    // Sección: Productos
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(...colorPrimary);
+    doc.text('DETALLE DE PRODUCTOS', left, y);
+    y += 16;
+
+    // Header tabla
+    doc.setFillColor(...colorPrimary);
+    doc.rect(left, y - 10, right - left, 16, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+
+    doc.text('Producto', left + 10, y + 2);
+    doc.text('Cantidad', right - 110, y + 2, { align: 'center' });
+    doc.text('Precio Unit.', right - 75, y + 2, { align: 'right' });
+    doc.text('Subtotal', right - 10, y + 2, { align: 'right' });
+
+    y += 18;
+    doc.setTextColor(...colorText);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+
     if (items.length === 0) {
-      writePdfLine(doc, 'No hay detalle de productos disponible para este pedido.', left, y, right - left, 14, pageBottom, topStart);
+      doc.text('No hay productos disponibles para este pedido.', left + 10, y);
+      y += 14;
     } else {
-      items.forEach((item) => {
-        if (y.value > pageBottom - 22) {
+      items.forEach((item, idx) => {
+        if (y > pageHeight - 80) {
           doc.addPage();
-          y.value = topStart;
+          y = 50;
         }
 
         const nombre = String(item?.nombre || 'Producto');
         const categoria = String(item?.categoria || 'General');
         const cantidad = parsePositiveInt(item?.cantidad, 1);
+        const precio = parsePrice(item?.precio, 0);
         const subtotal = parseMoney(item?.subtotal);
-        const itemText = nombre + ' (' + categoria + ')';
 
-        const nameLines = doc.splitTextToSize(itemText, qtyX - itemNameX - 12);
-        const rowHeight = Math.max(nameLines.length * 13, 14);
-
-        if (y.value + rowHeight > pageBottom) {
-          doc.addPage();
-          y.value = topStart;
+        // Fondo alternado
+        if (idx % 2 === 0) {
+          doc.setFillColor(248, 248, 248);
+          doc.rect(left, y - 8, right - left, 14, 'F');
         }
 
-        nameLines.forEach((line) => {
-          doc.text(line, itemNameX, y.value);
-          y.value += 13;
-        });
+        doc.setTextColor(...colorText);
+        const nameLines = doc.splitTextToSize(nombre + ' - ' + categoria, right - left - 220);
+        doc.text(nameLines, left + 10, y);
 
-        const rowTop = y.value - rowHeight;
-        doc.text(String(cantidad), qtyX, rowTop, { align: 'right' });
-        doc.text(formatCop(subtotal), subtotalX, rowTop, { align: 'right' });
-        y.value += 4;
+        doc.text(String(cantidad), right - 110, y, { align: 'center' });
+        doc.text(formatCop(precio), right - 75, y, { align: 'right' });
+        doc.text(formatCop(subtotal), right - 10, y, { align: 'right' });
+
+        y += 14;
       });
     }
 
-    y.value += 8;
-    doc.setDrawColor(220, 214, 206);
-    doc.line(left, y.value, right, y.value);
-    y.value += 14;
+    y += 10;
 
+    // Línea separadora
+    doc.setDrawColor(...colorSecond);
+    doc.setLineWidth(1);
+    doc.line(left, y, right, y);
+
+    y += 14;
+
+    // Totales
     const subtotalPedido = parseMoney(pedido.subtotal) || items.reduce((acc, item) => acc + parseMoney(item?.subtotal), 0);
     const envioPedido = parseMoney(pedido.envio);
     const descuentoPedido = parseMoney(pedido.descuento);
     const totalPedido = parseMoney(pedido.total);
 
     doc.setFont('helvetica', 'normal');
-    doc.text('Subtotal', right - 150, y.value);
-    doc.text(formatCop(subtotalPedido), subtotalX, y.value, { align: 'right' });
-    y.value += 14;
+    doc.setFontSize(10);
+    doc.setTextColor(...colorText);
 
-    doc.text('Envio', right - 150, y.value);
-    doc.text(formatCop(envioPedido), subtotalX, y.value, { align: 'right' });
-    y.value += 14;
+    doc.text('Subtotal:', right - 150, y);
+    doc.setFont('helvetica', 'bold');
+    doc.text(formatCop(subtotalPedido), right - 10, y, { align: 'right' });
 
-    doc.text('Descuento', right - 150, y.value);
-    doc.text(formatCop(descuentoPedido), subtotalX, y.value, { align: 'right' });
-    y.value += 16;
+    y += 14;
+    doc.setFont('helvetica', 'normal');
+    doc.text('Envío:', right - 150, y);
+    doc.setFont('helvetica', 'bold');
+    doc.text(formatCop(envioPedido), right - 10, y, { align: 'right' });
+
+    y += 14;
+    doc.setFont('helvetica', 'normal');
+    doc.text('Descuento:', right - 150, y);
+    doc.setFont('helvetica', 'bold');
+    doc.text('-' + formatCop(descuentoPedido), right - 10, y, { align: 'right' });
+
+    y += 16;
+
+    // Total destacado
+    doc.setFillColor(...colorLight);
+    doc.rect(right - 160, y - 8, 150, 18, 'F');
+    doc.setDrawColor(...colorPrimary);
+    doc.setLineWidth(2);
+    doc.rect(right - 160, y - 8, 150, 18);
 
     doc.setFont('helvetica', 'bold');
-    doc.text('Total', right - 150, y.value);
-    doc.text(formatCop(totalPedido), subtotalX, y.value, { align: 'right' });
+    doc.setFontSize(12);
+    doc.setTextColor(...colorPrimary);
+    doc.text('TOTAL', right - 155, y + 2);
+    doc.setFontSize(14);
+    doc.text(formatCop(totalPedido), right - 10, y + 3, { align: 'right' });
 
-    y.value += 24;
+    // Footer
+    y = pageHeight - 35;
+    doc.setDrawColor(...colorSecond);
+    doc.line(left, y, right, y);
+
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    writePdfLine(
-      doc,
-      'Este comprobante es informativo y resume tu compra en AUREALUXE.',
-      left,
-      y,
-      right - left,
-      12,
-      pageBottom,
-      topStart
-    );
+    doc.setFontSize(8);
+    doc.setTextColor(120, 120, 120);
+    doc.text('Este comprobante es informativo y valida tu compra en AUREALUXE.', pageWidth / 2, y + 10, { align: 'center' });
+    doc.text('Generado y archivado digitalmente - ' + formatDate(new Date().toISOString()), pageWidth / 2, y + 18, { align: 'center' });
 
     const safeId = String(pedido.id || 'pedido').replace(/[^a-zA-Z0-9-]/g, '').slice(0, 30) || 'pedido';
     doc.save('comprobante-' + safeId + '.pdf');
     errorEl.textContent = '';
-    showEstadoToast('Comprobante PDF generado correctamente.');
+    showEstadoToast('✓ Comprobante PDF generado correctamente.');
   } catch (_error) {
     errorEl.textContent = 'No se pudo generar el comprobante PDF. Intenta nuevamente.';
   } finally {
