@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contacto – AUREALUXE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/contacto.css"/>
+  <link rel="stylesheet" href="assets/css/auth-header.css"/>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <a href="index.html" class="logo">
+      <img src="assets/img/logo/aurea-logo.png" alt="AureaLuxe">
+    </a>
+
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="productos.html">Productos</a>
+      <a href="ofertas.html">Ofertas</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="contacto.html" class="active">Contacto</a>
+    </nav>
+
+    <div class="header-actions">
+      <a href="login.html" class="btn-ingresar">Ingresar</a>
+      <a href="registro.html" class="btn-registro">Registro</a>
+      <a href="carrito.html" class="cart-link">
+        <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Contacto</h1>
+    <p>¿Tienes alguna pregunta? Estamos aquí para ayudarte.</p>
+  </section>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <section class="contacto-main">
+
+    <!-- FORMULARIO -->
+    <div class="form-col">
+      <h2>Envíanos un mensaje</h2>
+
+      <div class="field">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" placeholder="Tu nombre"/>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="tu@email.com"/>
+      </div>
+
+      <div class="field">
+        <label for="asunto">Asunto</label>
+        <input type="text" id="asunto" placeholder="¿En qué podemos ayudarte?"/>
+      </div>
+
+      <div class="field">
+        <label for="mensaje">Mensaje</label>
+        <textarea id="mensaje" rows="6" placeholder="Tu mensaje..."></textarea>
+      </div>
+
+      <button class="btn-enviar" id="btnEnviar">Enviar Mensaje</button>
+      <p class="form-msg" id="formMsg"></p>
+    </div>
+
+    <!-- INFO DERECHA -->
+    <div class="info-col">
+
+      <h2>Información de Contacto</h2>
+
+      <div class="info-cards">
+        <!-- Email -->
+        <div class="info-item">
+          <div class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25
+                       2.25 0 01-2.25-2.25V6.75m19.5
+                       0A2.25 2.25 0 0019.5 4.5H4.5a2.25
+                       2.25 0 00-2.25 2.25m19.5
+                       0l-9.75 6.75L2.25 6.75"/>
+            </svg>
+          </div>
+          <div class="info-text">
+            <strong>Email</strong>
+            <span>contacto@aurealuxe.com</span>
+            <span>esauortiz014@gmail.com</span>
+          </div>
+        </div>
+
+        <!-- Teléfono -->
+        <div class="info-item">
+          <div class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.25 6.75c0 8.284 6.716 15 15
+                       15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97
+                       1.293c-.282.376-.769.542-1.21.38a12.035
+                       12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963
+                       3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25
+                       2.25 0 002.25 4.5v2.25z"/>
+            </svg>
+          </div>
+          <div class="info-text">
+            <strong>Teléfono</strong>
+            <span>+57 300 123 4567</span>
+            
+          </div>
+        </div>
+
+        <!-- Dirección -->
+        <div class="info-item">
+          <div class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M15 10.5a3 3 0 11-6 0 3 3 0 016
+                       0zM19.5 10.5c0 7.142-7.5
+                       11.25-7.5 11.25S4.5 17.642
+                       4.5 10.5a7.5 7.5 0 1115 0z"/>
+            </svg>
+          </div>
+          <div class="info-text">
+            <strong>Dirección</strong>
+            <span>Calle 85 #14-32</span>
+            <span>Bogota, Colombia</span>
+            <span>Zona Norte</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- HORARIO -->
+      <div class="horario-card">
+        <h3>Horario de Atención</h3>
+        <div class="horario-row">
+          <span>Lunes - Viernes</span>
+          <span>8:00 AM - 5:00 PM</span>
+        </div>
+        <div class="horario-row">
+          <span>Sábado</span>
+          <span>8:00 AM - 12:00 PM</span>
+        </div>
+        <div class="horario-row">
+          <span>Domingo</span>
+          <span>Cerrado</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo"><img src="assets/img/logo/aurea-logo.png" alt="AureaLuxe"></div>
+        <p>Productos tecnológicos premium para elevar tu experiencia digital.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Enlaces Rápidos</h4>
+        <ul>
+          <li><a href="productos.html">Productos</a></li>
+          <li><a href="ofertas.html">Ofertas</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Síguenos</h4>
+        <p>Mantente conectado en redes sociales</p>
+        <div class="social-icons">
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <img src="assets/icons/instagram.svg" alt="Instagram">
+          </a>
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <img src="assets/icons/facebook.svg" alt="Facebook">
+          </a>
+          <a href="https://wa.me/51999999999" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+            <img src="assets/icons/whatsapp.svg" alt="WhatsApp">
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 AUREALUXE. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/carrito-sync.js"></script>
+  <script src="assets/js/auth-header.js"></script>
+  <script src="assets/js/analytics-tracker.js"></script>
+  <script src="assets/js/scroll-reveal.js"></script>
+  <script src="assets/js/contacto.js?v=20260331-4"></script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ofertas – AUREALUXE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/ofertas.css"/>
+  <link rel="stylesheet" href="assets/css/auth-header.css"/>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <a href="index.html" class="logo">
+      <img src="assets/img/logo/aurea-logo.png" alt="AureaLuxe">
+    </a>
+
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="productos.html">Productos</a>
+      <a href="ofertas.html" class="active">Ofertas</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="contacto.html">Contacto</a>
+    </nav>
+
+    <div class="header-actions">
+      <a href="login.html" class="btn-ingresar">Ingresar</a>
+      <a href="registro.html" class="btn-registro">Registro</a>
+      <a href="carrito.html" class="cart-link">
+        <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Ofertas Especiales</h1>
+    <p id="heroCampaignText">Mantén atento a nuestras promociones exclusivas y descuentos especiales en productos seleccionados.</p>
+  </section>
+
+  <section class="campaign-banner" id="campaignBanner" aria-live="polite">
+    <div class="campaign-banner-tag" id="campaignBannerTag">Campaña activa</div>
+    <h2 id="campaignBannerTitle">Promociones personalizadas para ti</h2>
+    <p id="campaignBannerDescription">Revisamos temporada, categorías y tu actividad para mostrarte las mejores oportunidades del momento.</p>
+    <a href="productos.html" class="campaign-banner-cta" id="campaignBannerCta">Ver promociones</a>
+  </section>
+
+  <section class="campaign-filters" aria-label="Filtrar campañas">
+    <button type="button" class="campaign-filter active" data-filter="all">Todas</button>
+    <button type="button" class="campaign-filter" data-filter="fecha">Por fecha</button>
+    <button type="button" class="campaign-filter" data-filter="categoria">Por categoría</button>
+    <button type="button" class="campaign-filter" data-filter="comportamiento">Por comportamiento</button>
+  </section>
+
+  <!-- CARDS -->
+  <section class="cards-section" id="campaignCards"></section>
+
+  <section class="campaign-empty" id="campaignEmpty" style="display:none;">
+    No encontramos campañas para ese filtro en este momento.
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter">
+    <h2>Suscríbete a Nuestro Newsletter</h2>
+    <p>Recibe ofertas exclusivas y sé el primero en enterarte de nuevas promociones</p>
+    <div class="newsletter-form">
+      <input type="email" id="emailInput" placeholder="Tu email"/>
+      <button type="button" id="btnSuscribirse">Suscribirse</button>
+    </div>
+    <p class="newsletter-msg" id="newsletterMsg"></p>
+  </section>
+
+  <div class="spacer"></div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo"><img src="assets/img/logo/aurea-logo.png" alt="AureaLuxe"></div>
+        <p>Productos tecnológicos premium para elevar tu experiencia digital.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Enlaces Rápidos</h4>
+        <ul>
+          <li><a href="productos.html">Productos</a></li>
+          <li><a href="ofertas.html">Ofertas</a></li>
+          <li><a href="#">Nosotros</a></li>
+          <li><a href="#">Contacto</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Síguenos</h4>
+        <p>Mantente conectado en redes sociales</p>
+        <div class="social-icons">
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <img src="assets/icons/instagram.svg" alt="Instagram">
+          </a>
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <img src="assets/icons/facebook.svg" alt="Facebook">
+          </a>
+          <a href="https://wa.me/51999999999" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+            <img src="assets/icons/whatsapp.svg" alt="WhatsApp">
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 AUREALUXE. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/carrito-sync.js"></script>
+  <script src="assets/js/auth-header.js"></script>
+  <script src="assets/js/analytics-tracker.js"></script>
+  <script src="assets/js/scroll-reveal.js"></script>
+  <script src="assets/js/ofertas.js"></script>
+</body>
+</html>

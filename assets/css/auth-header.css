@@ -1,0 +1,136 @@
+/* Header auth menu (global) */
+
+html {
+  scrollbar-gutter: stable;
+}
+
+.auth-hidden {
+  display: none !important;
+}
+
+/* Evita el parpadeo de Ingresar/Registro al navegar entre paginas estando logueado. */
+.header-actions .btn-ingresar,
+.header-actions .btn-registro {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body.auth-guest-ready .header-actions .btn-ingresar,
+body.auth-guest-ready .header-actions .btn-registro {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Mantiene estable el header entre estado invitado y logeado. */
+.header-actions {
+  width: 220px;
+  flex-shrink: 0;
+  justify-content: flex-end;
+}
+
+.user-menu {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.user-trigger {
+  width: auto;
+  height: auto;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #6b6460;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.user-trigger:hover,
+.user-trigger:focus-visible {
+  color: #c69b7b;
+  outline: none;
+}
+
+.user-trigger-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 210px;
+  background: #ffffff;
+  border: 1px solid #e8e2da;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+  display: none;
+  z-index: 300;
+}
+
+.user-dropdown.open {
+  display: block;
+}
+
+.user-dropdown-email {
+  padding: 10px 10px 8px;
+  font-size: 11px;
+  color: #8e8682;
+  border-bottom: 1px solid #e8e2da;
+  margin-bottom: 6px;
+  word-break: break-all;
+}
+
+.user-dropdown a,
+.user-dropdown button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #2a2421;
+  text-decoration: none;
+  line-height: 1.2;
+}
+
+.user-dropdown a:visited {
+  color: #2a2421;
+  text-decoration: none;
+}
+
+.user-dropdown a:hover,
+.user-dropdown button:hover {
+  background: rgba(198, 155, 123, 0.12);
+  color: #c69b7b;
+  text-decoration: none;
+}
+
+.user-dropdown .logout-btn {
+  color: #b84a3b;
+}
+
+@media (max-width: 768px) {
+  .header-actions {
+    width: auto;
+  }
+
+  .user-dropdown {
+    right: -10px;
+    min-width: 190px;
+  }
+}

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Estado de Envio - AUREALUXE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/estado-envio.css"/>
+  <link rel="stylesheet" href="assets/css/auth-header.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo">
+      <img src="assets/img/logo/aurea-logo.png" alt="AureaLuxe">
+    </a>
+
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="productos.html">Productos</a>
+      <a href="ofertas.html">Ofertas</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="contacto.html">Contacto</a>
+    </nav>
+
+    <div class="header-actions">
+      <a href="login.html" class="btn-ingresar">Ingresar</a>
+      <a href="registro.html" class="btn-registro">Registro</a>
+      <a href="carrito.html" class="cart-link">
+        <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <h1>Estado de tus envios</h1>
+      <p>Aqui puedes revisar el estado actual de todos tus pedidos.</p>
+    </section>
+
+    <section class="page-tools">
+      <button type="button" class="btn-refresh" id="btnRefreshEstado">Actualizar</button>
+    </section>
+
+    <section class="estado-empty" id="estadoEmpty" style="display:none;">
+      Aun no tienes pedidos registrados con este correo.
+    </section>
+
+    <section class="estado-list" id="estadoList"></section>
+    <p class="estado-error" id="estadoError"></p>
+
+    <section class="help-center" aria-labelledby="helpCenterTitle">
+      <div class="help-center-head">
+        <h2 id="helpCenterTitle">Centro de ayuda</h2>
+        <p>Resuelve tus dudas sobre envios, seguimiento y devoluciones en un solo lugar.</p>
+      </div>
+
+      <div class="help-center-grid">
+        <article class="help-mini-card">
+          <div class="help-mini-head">
+            <img src="assets/icons/faq-tiempo-envio.svg" alt="" class="help-mini-icon" aria-hidden="true">
+            <h3>Tiempos de envio</h3>
+          </div>
+          <p>Ciudades principales: 1 a 3 dias habiles. Otras zonas: 3 a 7 dias habiles.</p>
+        </article>
+
+        <article class="help-mini-card">
+          <div class="help-mini-head">
+            <img src="assets/icons/faq-devoluciones.svg" alt="" class="help-mini-icon" aria-hidden="true">
+            <h3>Devoluciones</h3>
+          </div>
+          <p>Puedes solicitar devolucion dentro de los primeros 5 dias habiles tras la entrega.</p>
+        </article>
+
+        <article class="help-mini-card">
+          <div class="help-mini-head">
+            <img src="assets/icons/faq-seguimiento.svg" alt="" class="help-mini-icon" aria-hidden="true">
+            <h3>Soporte</h3>
+          </div>
+          <p>Si tu pedido presenta novedad, contactanos desde la pagina de contacto con tu numero de pedido.</p>
+        </article>
+      </div>
+
+      <div class="faq-list" role="list">
+        <details class="faq-item" open>
+          <summary>Cuanto tarda en llegar mi pedido?</summary>
+          <p>Depende de la ciudad de destino. En promedio, el envio nacional tarda entre 1 y 7 dias habiles.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Como hago seguimiento a mi compra?</summary>
+          <p>Desde esta pagina puedes ver el progreso del pedido en tiempo real: confirmado, preparando, en camino o entregado.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Puedo cancelar un pedido despues de pagarlo?</summary>
+          <p>Si el pedido esta en estado pendiente o procesado, puedes cancelarlo desde el boton Cancelar pedido.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Que cubre la politica de devoluciones?</summary>
+          <p>Recibimos devoluciones por productos defectuosos, errores en el envio o inconformidad dentro del plazo indicado.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Cuando me hacen el reembolso?</summary>
+          <p>Una vez aprobado el caso, el reembolso se procesa en un plazo estimado de 3 a 10 dias habiles segun el medio de pago.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo"><img src="assets/img/logo/aurea-logo.png" alt="AureaLuxe"></div>
+        <p>Productos tecnologicos premium para elevar tu experiencia digital.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Enlaces Rapidos</h4>
+        <ul>
+          <li><a href="productos.html">Productos</a></li>
+          <li><a href="ofertas.html">Ofertas</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Siguenos</h4>
+        <p>Mantente conectado en redes sociales</p>
+        <div class="social-icons">
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <img src="assets/icons/instagram.svg" alt="Instagram">
+          </a>
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <img src="assets/icons/facebook.svg" alt="Facebook">
+          </a>
+          <a href="https://wa.me/51999999999" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+            <img src="assets/icons/whatsapp.svg" alt="WhatsApp">
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 AUREALUXE. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <div class="cancel-modal-backdrop" id="cancelModalBackdrop" aria-hidden="true">
+    <div class="cancel-modal" role="dialog" aria-modal="true" aria-labelledby="cancelModalTitle" aria-describedby="cancelModalText">
+      <button type="button" class="cancel-modal-close" id="cancelModalClose" aria-label="Cerrar confirmacion">×</button>
+      <div class="cancel-modal-icon" aria-hidden="true">!</div>
+      <h2 id="cancelModalTitle">Cancelar pedido</h2>
+      <p id="cancelModalText">Estas seguro de que quieres cancelar este pedido?</p>
+      <div class="cancel-modal-actions">
+        <button type="button" class="btn-modal-secondary" id="cancelModalBack">Volver</button>
+        <button type="button" class="btn-modal-danger" id="cancelModalConfirm">Si, cancelar pedido</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/carrito-sync.js"></script>
+  <script src="assets/js/auth-header.js"></script>
+  <script src="assets/js/analytics-tracker.js"></script>
+  <script src="assets/js/scroll-reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="assets/js/estado-envio.js"></script>
+</body>
+</html>
