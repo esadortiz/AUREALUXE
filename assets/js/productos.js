@@ -153,11 +153,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     try {
+        console.log('═══════════════════════════════════════════');
+        console.log('[WISHLIST] *** INICIALIZANDO SISTEMA DE FAVORITOS ***');
+        console.log('═══════════════════════════════════════════');
         createWishlistButtons();
         updateWishlistCount();
         updateWishlistToggleButton();
+        console.log('[WISHLIST] ✓ Inicialización completada. Wishlist actual:', Array.from(wishlistSet));
+        console.log('[WISHLIST] Storage key:', WISHLIST_STORAGE_KEY);
+        console.log('═══════════════════════════════════════════');
     } catch (error) {
-        console.warn('[PRODUCTOS] Error inicializando wishlist:', error);
+        console.error('[WISHLIST] ✗ Error inicializando wishlist:', error);
     }
 
     try {
@@ -244,12 +250,20 @@ document.addEventListener('DOMContentLoaded', function () {
     function loadWishlist() {
         try {
             var stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
+            console.log('[WISHLIST] ↓ Cargando desde localStorage...');
+            console.log('[WISHLIST] Datos encontrados:', stored);
+            
             var parsed = stored ? JSON.parse(stored) : [];
             if (!Array.isArray(parsed)) {
+                console.warn('[WISHLIST] ⚠️  Los datos no son un array');
                 return new Set();
             }
-            return new Set(parsed.map(function (item) { return String(item); }));
+            
+            var result = new Set(parsed.map(function (item) { return String(item); }));
+            console.log('[WISHLIST] ✓ Cargados', result.size, 'favoritos:', Array.from(result));
+            return result;
         } catch (_error) {
+            console.error('[WISHLIST] ✗ Error al cargar:', _error);
             return new Set();
         }
     }
@@ -427,13 +441,28 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function saveWishlist() {
-        localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(Array.from(wishlistSet)));
+        try {
+            var data = JSON.stringify(Array.from(wishlistSet));
+            localStorage.setItem(WISHLIST_STORAGE_KEY, data);
+            
+            // Verificar que se guardó
+            var verify = localStorage.getItem(WISHLIST_STORAGE_KEY);
+            console.log('[WISHLIST] ✓ Guardado en localStorage');
+            console.log('[WISHLIST] Contenido guardado:', verify);
+            
+            if (verify !== data) {
+                console.error('[WISHLIST] ⚠️  ERROR: No coinciden los datos guardados!');
+            }
+        } catch (error) {
+            console.error('[WISHLIST] ✗ Error al guardar:', error);
+        }
     }
 
     function updateWishlistCount() {
         if (!wishlistCount) return;
         var totalFav = wishlistSet.size;
         wishlistCount.textContent = totalFav + (totalFav === 1 ? ' favorito guardado' : ' favoritos guardados');
+        console.log('[WISHLIST] Contador actualizado:', totalFav);
     }
 
     function updateWishlistToggleButton() {
@@ -442,62 +471,70 @@ document.addEventListener('DOMContentLoaded', function () {
         btnToggleWishlist.textContent = wishlistOnly ? 'Ver todos los productos' : 'Ver solo favoritos';
     }
 
-    function updateWishlistState(card) {
-        var productId = getProductId(card);
-        var isFavorite = wishlistSet.has(productId);
-        var heartBtn = card.querySelector('.wishlist-btn');
-
-        card.classList.toggle('is-favorite', isFavorite);
-
-        if (heartBtn) {
-            heartBtn.classList.toggle('active', isFavorite);
-            heartBtn.setAttribute('aria-pressed', isFavorite ? 'true' : 'false');
-            heartBtn.setAttribute('title', isFavorite ? 'Quitar de favoritos' : 'Guardar en favoritos');
-            heartBtn.setAttribute('aria-label', isFavorite ? 'Quitar de favoritos' : 'Guardar en favoritos');
-        }
-    }
-
     function createWishlistButtons() {
-        cards.forEach(function (card) {
-            var imageWrap = card.querySelector('.card-image');
-            if (!imageWrap || imageWrap.querySelector('.wishlist-btn')) {
-                return;
+        console.log('[WISHLIST] Inicializando favoritos...');
+        console.log('[WISHLIST] Wishlist actual:', Array.from(wishlistSet));
+        
+        // Obtener todos los botones de wishlist
+        var wishlistBtns = document.querySelectorAll('.wishlist-btn');
+        console.log('[WISHLIST] Encontrados', wishlistBtns.length, 'botones');
+        
+        // Agregar evento a cada botón
+        wishlistBtns.forEach(function (btn) {
+            var productId = btn.getAttribute('data-product-id');
+            
+            // Actualizar estado visual
+            var isFavorite = wishlistSet.has(productId);
+            btn.classList.toggle('active', isFavorite);
+            
+            // Agregar listener de click si no lo tiene
+            if (!btn._wishlistHandlerAdded) {
+                btn._wishlistHandlerAdded = true;
+                
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    console.log('═══════════════════════════════════════════');
+                    console.log('[WISHLIST] CLICK EN BOTÓN:', productId);
+                    
+                    // Obtener info del producto
+                    var card = document.getElementById(productId);
+                    if (!card) {
+                        console.error('[WISHLIST] ERROR: No encontré la tarjeta');
+                        return;
+                    }
+                    
+                    var productNameNode = card.querySelector('.card-title');
+                    var productName = productNameNode ? productNameNode.textContent.trim() : 'Producto';
+                    
+                    // Alternar favorito
+                    var isCurrentlyFavorited = wishlistSet.has(productId);
+                    console.log('[WISHLIST] ¿Es favorito actualmente?', isCurrentlyFavorited);
+                    
+                    if (isCurrentlyFavorited) {
+                        wishlistSet.delete(productId);
+                        btn.classList.remove('active');
+                        showNotification('♡ ' + productName + ' eliminado de favoritos');
+                        console.log('[WISHLIST] → REMOVIDO');
+                    } else {
+                        wishlistSet.add(productId);
+                        btn.classList.add('active');
+                        showNotification('♥ ' + productName + ' guardado en favoritos');
+                        console.log('[WISHLIST] → AGREGADO');
+                    }
+                    
+                    // Guardar inmediatamente
+                    saveWishlist();
+                    console.log('[WISHLIST] Total en wishlist:', wishlistSet.size);
+                    console.log('[WISHLIST] Contenido:', Array.from(wishlistSet));
+                    
+                    // Actualizar ui
+                    updateWishlistCount();
+                    filterProducts();
+                    console.log('═══════════════════════════════════════════');
+                });
             }
-
-            var heartBtn = document.createElement('button');
-            heartBtn.type = 'button';
-            heartBtn.className = 'wishlist-btn';
-            heartBtn.innerHTML = [
-                '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">',
-                '<path d="M12 21s-6.7-4.3-9.3-8C.4 9.8 1 6.4 3.8 4.8 6 3.6 8.6 4.2 10.4 6c.6.6 1.1 1.3 1.6 2 .5-.7 1-1.4 1.6-2 1.8-1.8 4.4-2.4 6.6-1.2 2.8 1.6 3.4 5 1.1 8.2C18.7 16.7 12 21 12 21z"/>',
-                '</svg>'
-            ].join('');
-
-            imageWrap.appendChild(heartBtn);
-
-            heartBtn.addEventListener('click', function (event) {
-                event.preventDefault();
-                event.stopPropagation();
-
-                var productId = getProductId(card);
-                var productNameNode = card.querySelector('.card-title');
-                var productName = productNameNode ? productNameNode.textContent.trim() : 'Producto';
-
-                if (wishlistSet.has(productId)) {
-                    wishlistSet.delete(productId);
-                    showNotification('♡ ' + productName + ' eliminado de favoritos');
-                } else {
-                    wishlistSet.add(productId);
-                    showNotification('♥ ' + productName + ' guardado en favoritos');
-                }
-
-                saveWishlist();
-                updateWishlistState(card);
-                updateWishlistCount();
-                filterProducts();
-            });
-
-            updateWishlistState(card);
         });
     }
 
@@ -1595,6 +1632,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!cart[existingIndex].base_product_id) {
                     cart[existingIndex].base_product_id = baseProductId;
                 }
+                if (!cart[existingIndex].nombre_base) {
                     cart[existingIndex].nombre_base = baseProductName;
                 }
                 console.log('[PRODUCTOS] Producto existente. Nueva cantidad:', cart[existingIndex].cantidad);
@@ -1613,14 +1651,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     variante_label: product.variante_label || ''
                 });
                 console.log('[PRODUCTOS] Producto nuevo agregado');
+            }
             
             // Guardar en localStorage
             localStorage.setItem('aurealuxe_cart', JSON.stringify(cart));
             console.log('[PRODUCTOS] ✓ Guardado en localStorage:', JSON.stringify(cart));
 
-
             // Actualizar badge del carrito
-            updateCartBadge(
+            updateCartBadge();
+
+            return {
                 ok: true,
                 added: qtyToAdd,
                 remaining: Math.max(0, baseStock - (currentQtyInCart + qtyToAdd))
