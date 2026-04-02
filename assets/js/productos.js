@@ -610,7 +610,14 @@ document.addEventListener('DOMContentLoaded', function () {
             if (typeof window.supabase === 'undefined') {
                 return null;
             }
+
+            if (window.__aureaSupabaseClient) {
+                reviewsClient = window.__aureaSupabaseClient;
+                return reviewsClient;
+            }
+
             reviewsClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            window.__aureaSupabaseClient = reviewsClient;
             return reviewsClient;
         } catch (_error) {
             return null;

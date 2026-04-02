@@ -130,6 +130,129 @@
     setAuthUiState('user');
   }
 
+  function initMobileMenu() {
+    const header = document.querySelector('header');
+    const nav = header ? header.querySelector('nav') : null;
+    const actionsEl = header ? header.querySelector('.header-actions') : null;
+
+    if (!header || !nav || !actionsEl) return;
+    if (header.querySelector('.mobile-menu-toggle')) return;
+
+    const navLinks = Array.from(nav.querySelectorAll('a'));
+    if (!navLinks.length) return;
+    const ingresarLink = actionsEl.querySelector('.btn-ingresar');
+    const registroLink = actionsEl.querySelector('.btn-registro');
+
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'mobile-menu-toggle';
+    toggleBtn.type = 'button';
+    toggleBtn.setAttribute('aria-label', 'Abrir menu de navegacion');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+    toggleBtn.innerHTML = [
+      '<span class="mobile-menu-line"></span>',
+      '<span class="mobile-menu-line"></span>',
+      '<span class="mobile-menu-line"></span>'
+    ].join('');
+
+    const panel = document.createElement('aside');
+    panel.className = 'mobile-menu-panel';
+    panel.setAttribute('aria-hidden', 'true');
+
+    const panelTitle = document.createElement('p');
+    panelTitle.className = 'mobile-menu-title';
+    panelTitle.textContent = 'Categorias';
+
+    const list = document.createElement('ul');
+    list.className = 'mobile-menu-list';
+
+    navLinks.forEach((link) => {
+      const item = document.createElement('li');
+      const cloned = link.cloneNode(true);
+      cloned.classList.add('mobile-menu-link');
+      item.appendChild(cloned);
+      list.appendChild(item);
+    });
+
+    if (ingresarLink || registroLink) {
+      const accountTitle = document.createElement('p');
+      accountTitle.className = 'mobile-menu-title mobile-menu-title-account';
+      accountTitle.textContent = 'Cuenta';
+      panel.appendChild(accountTitle);
+
+      const accountList = document.createElement('ul');
+      accountList.className = 'mobile-menu-list';
+
+      [ingresarLink, registroLink].forEach((link) => {
+        if (!link) return;
+        const item = document.createElement('li');
+        const cloned = link.cloneNode(true);
+        cloned.classList.remove('auth-hidden');
+        cloned.classList.add('mobile-menu-link', 'mobile-auth-link');
+        item.appendChild(cloned);
+        accountList.appendChild(item);
+      });
+
+      panel.appendChild(accountList);
+    }
+
+    panel.insertBefore(panelTitle, panel.firstChild);
+    panel.insertBefore(list, panel.children[1] || null);
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'mobile-menu-backdrop';
+
+    document.body.appendChild(backdrop);
+    document.body.appendChild(panel);
+    actionsEl.appendChild(toggleBtn);
+
+    function setHeaderHeightVar() {
+      const headerHeight = header.offsetHeight || 58;
+      document.documentElement.style.setProperty('--mobile-header-height', headerHeight + 'px');
+    }
+
+    function closeMenu() {
+      document.body.classList.remove('mobile-menu-open');
+      toggleBtn.classList.remove('is-open');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      panel.setAttribute('aria-hidden', 'true');
+    }
+
+    function openMenu() {
+      document.body.classList.add('mobile-menu-open');
+      toggleBtn.classList.add('is-open');
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      panel.setAttribute('aria-hidden', 'false');
+    }
+
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (document.body.classList.contains('mobile-menu-open')) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    backdrop.addEventListener('click', closeMenu);
+
+    panel.querySelectorAll('a').forEach((menuLink) => {
+      menuLink.addEventListener('click', closeMenu);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeMenu();
+    });
+
+    window.addEventListener('resize', () => {
+      setHeaderHeightVar();
+      if (window.innerWidth > 768) {
+        closeMenu();
+      }
+    });
+
+    setHeaderHeightVar();
+  }
+
   async function initAuthHeader() {
     const actionsEl = document.querySelector('.header-actions');
     if (!actionsEl) return;
@@ -171,5 +294,8 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', initAuthHeader);
+  document.addEventListener('DOMContentLoaded', () => {
+    initMobileMenu();
+    initAuthHeader();
+  });
 })();

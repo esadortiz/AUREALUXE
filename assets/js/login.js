@@ -13,7 +13,12 @@ let screenAlertEl = null;
 let screenAlertTimer = null;
 
 if (typeof supabase !== 'undefined') {
-  supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  if (window.__aureaSupabaseClient) {
+    supabaseClient = window.__aureaSupabaseClient;
+  } else {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    window.__aureaSupabaseClient = supabaseClient;
+  }
 }
 
 function ensureScreenAlert() {
